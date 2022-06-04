@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"io/ioutil"
 
 	"path/filepath"
 
@@ -278,6 +279,52 @@ func (r *Runner) run(v *VCL, mode *RunMode) ([]*plugin.VCL, error) {
 	}
 
 	return vcls, nil
+}
+
+func (r *Runner) Parse() {
+
+	v, err := r.resolver.MainVCL()
+	lx := lexer.NewFromString(v.Data, lexer.WithFile(v.Name))
+	p := parser.New(lx)
+	vcl, err := p.ParseVCL()
+	if err != nil {
+		lx.NewLine()
+		pe, ok := errors.Cause(err).(*parser.ParseError)
+		if ok {
+			r.printParseError(lx, pe)
+		}
+		return;
+	}
+	lx.NewLine()
+	r.lexers[v.Name] = lx
+
+	var vcls []*plugin.VCL
+	// Lint dependent VCLs before execute main VCL
+	for _, stmt := range vcl.Statements {
+		include, ok := stmt.(*ast.IncludeStatement)
+		if !ok {
+			continue
+		}
+
+		if module, err := r.resolver.Resolve(include.Module.Value); err == nil {
+			subVcl,_ := r.run(module, &RunMode{
+				isMain: false,
+				isStat: false,
+			})
+			vcls = append(vcls, subVcl...)
+		}
+	}
+
+	// Append main to the last of proceeds VCLs
+	vcls = append(vcls, &plugin.VCL{
+		File: v.Name,
+		AST:  vcl,
+	})
+
+	for _,vcl := range vcls {
+		vclString := vcl.AST.JSONString()
+		ioutil.WriteFile(fmt.Sprintf("%s.json", vcl.File), []byte(vclString), os.ModePerm)
+	}
 }
 
 func (r *Runner) printParseError(lx *lexer.Lexer, err *parser.ParseError) {
