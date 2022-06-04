@@ -31,6 +31,7 @@ var (
 const (
 	subcommandLint      = "lint"
 	subcommandTerraform = "terraform"
+	subcommandParse = "parse"
 )
 
 type multiStringFlags []string
@@ -75,6 +76,7 @@ Usage:
 Subcommands:
     terraform : Run lint from terraform planned JSON
     lint      : Run lint (default)
+	parse     : Run parser and output AST into JSON
 
 Flags:
     -I, --include_path : Add include path
@@ -144,6 +146,21 @@ func main() {
 	case subcommandLint:
 		// "lint" command provides single file of service, then resolvers size is always 1
 		resolvers, err = NewFileResolvers(fs.Arg(1), c)
+	case subcommandParse:
+		// "parse" command provides single file of service, then resolvers size is always 1
+		resolvers, err = NewFileResolvers(fs.Arg(1), c)
+
+		if err != nil {
+			writeln(red, err.Error())
+			os.Exit(1)
+		}
+
+		for _, v := range resolvers {
+			runner,_ := NewRunner(v, c);
+			runParse(runner)
+		}
+		
+		return;
 	default:
 		// "lint" command provides single file of service, then resolvers size is always 1
 		resolvers, err = NewFileResolvers(fs.Arg(0), c)
@@ -227,6 +244,10 @@ func runLint(runner *Runner) error {
 		return ErrExit
 	}
 	return nil
+}
+
+func runParse(runner *Runner) {
+	runner.Parse()
 }
 
 func runStats(runner *Runner, printJson bool) error {
