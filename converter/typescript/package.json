@@ -1,0 +1,20 @@
+{
+  "name": "@falco/converter-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.7.3",
+    "vitest": "^0.13.1"
+  },
+  "dependencies": {
+    "@babel/generator": "^7.18.2",
+    "@babel/traverse": "^7.18.2"
+  }
+}
