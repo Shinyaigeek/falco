@@ -1,3 +1,4 @@
+// TODO: 真面目に型定義する
 export type VCLAST = StatementType[];
 
 type TokenType =
@@ -85,21 +86,29 @@ type Token = {
 };
 
 type TableDeclarationType = {
-    Token: TokenType;
-    Properties: TablePropertyType[]
-}
+  Token: Token;
+  Name: NameType;
+  Properties: TablePropertyType[];
+  Block: BlockType
+};
 
 type TablePropertyType = {
-  Token: TokenType;
+  Token: Token;
   Key: string;
   Value: ExpressionType;
 };
 
 type ExpressionType = {} & NodeType;
 
-type StatementType = {} & NodeType;
+type StatementType = {} & NodeType & TableDeclarationType;
+
+type NameType = {} & NodeType;
+
+type BlockType = {
+    Statements: StatementType[]
+} & NodeType;
 
 type NodeType = {
-  Token: TokenType;
+  Token: Token;
   Value: string;
 };
