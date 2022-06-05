@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 	"time"
-	"io/ioutil"
 
 	"path/filepath"
 
@@ -323,7 +322,7 @@ func (r *Runner) Parse() {
 
 	for _,vcl := range vcls {
 		vclString := vcl.AST.JSONString()
-		ioutil.WriteFile(fmt.Sprintf("%s.json", vcl.File), []byte(vclString), os.ModePerm)
+		os.Stdout.WriteString(vclString)
 	}
 }
 
