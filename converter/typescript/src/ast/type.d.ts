@@ -1,6 +1,6 @@
-export type VCLAST = any;
+export type VCLAST = StatementType[];
 
-type tokenType =
+type TokenType =
   | "ILLEGAL"
   | "EOF"
   | "IDENT"
@@ -80,6 +80,26 @@ type tokenType =
 
 // TODO: define only necessary, but all property should be defined
 type Token = {
-  Type: tokenType;
+  Type: TokenType;
   Literal: string;
+};
+
+type TableDeclarationType = {
+    Token: TokenType;
+    Properties: TablePropertyType[]
+}
+
+type TablePropertyType = {
+  Token: TokenType;
+  Key: string;
+  Value: ExpressionType;
+};
+
+type ExpressionType = {} & NodeType;
+
+type StatementType = {} & NodeType;
+
+type NodeType = {
+  Token: TokenType;
+  Value: string;
 };
