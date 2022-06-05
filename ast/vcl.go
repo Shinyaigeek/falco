@@ -35,7 +35,7 @@ func (v *VCL) JSONString() string {
 		if err != nil {
 			panic(err)
 		}
-		buf.WriteString(string(s))
+		json.Indent(&buf, []byte(s), "", "  ")
 	}
 
 	buf.WriteString("]")

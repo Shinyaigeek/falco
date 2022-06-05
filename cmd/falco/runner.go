@@ -299,7 +299,7 @@ func (r *Runner) Parse() {
 	r.lexers[v.Name] = lx
 
 	var vcls []*plugin.VCL
-	// Lint dependent VCLs before execute main VCL
+	// Parse dependent VCLs before execute main VCL
 	for _, stmt := range vcl.Statements {
 		include, ok := stmt.(*ast.IncludeStatement)
 		if !ok {
